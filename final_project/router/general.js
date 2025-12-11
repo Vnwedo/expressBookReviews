@@ -41,8 +41,6 @@ const getBooksByAuthorPromise = (author) => {
         const bookKeys = Object.keys(books);
 
         for (const isbn of bookKeys) {
-            
-            
             if (books[isbn].author === author) { 
                 matchingBooks[isbn] = books[isbn];
             }
@@ -52,6 +50,26 @@ const getBooksByAuthorPromise = (author) => {
             resolve(matchingBooks);
         } else {
             reject({message: `No books found by author: ${author}.`});
+        }
+    });
+};
+
+
+const getBooksByTitlePromise = (title) => {
+    return new Promise((resolve, reject) => {
+        let matchingBooks = {};
+        const bookKeys = Object.keys(books);
+
+        for (const isbn of bookKeys) {
+            if (books[isbn].title.toLowerCase().includes(title.toLowerCase())) { 
+                matchingBooks[isbn] = books[isbn];
+            }
+        }
+        
+        if (Object.keys(matchingBooks).length > 0) {
+            resolve(matchingBooks);
+        } else {
+            reject({message: `No books found with title containing: ${title}.`});
         }
     });
 };
@@ -110,22 +128,14 @@ public_users.get('/author/:author', async function (req, res) {
 });
 
 
-public_users.get('/title/:title',function (req, res) {
+public_users.get('/title/:title', async function (req, res) {
   const title = req.params.title;
-  let matchingBooks = {};
-  
-  const bookKeys = Object.keys(books);
-
-  for (const isbn of bookKeys) {
-      if (books[isbn].title.toLowerCase().includes(title.toLowerCase())) { 
-          matchingBooks[isbn] = books[isbn];
-      }
-  }
-
-  if (Object.keys(matchingBooks).length > 0) {
+    
+  try {
+      const matchingBooks = await getBooksByTitlePromise(title);
       return res.status(200).json(matchingBooks);
-  } else {
-      return res.status(404).json({message: `No books found with title containing: ${title}.`});
+  } catch (error) {
+      return res.status(404).json(error);
   }
 });
 
