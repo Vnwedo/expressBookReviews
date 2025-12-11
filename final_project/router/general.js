@@ -35,6 +35,28 @@ const getBookByISBNPromise = (isbn) => {
 };
 
 
+const getBooksByAuthorPromise = (author) => {
+    return new Promise((resolve, reject) => {
+        let matchingBooks = {};
+        const bookKeys = Object.keys(books);
+
+        for (const isbn of bookKeys) {
+            
+            
+            if (books[isbn].author === author) { 
+                matchingBooks[isbn] = books[isbn];
+            }
+        }
+        
+        if (Object.keys(matchingBooks).length > 0) {
+            resolve(matchingBooks);
+        } else {
+            reject({message: `No books found by author: ${author}.`});
+        }
+    });
+};
+
+
 public_users.post("/register", (req,res) => {
   const username = req.body.username;
   const password = req.body.password;
@@ -71,28 +93,19 @@ public_users.get('/isbn/:isbn', async function (req, res) {
       const bookDetails = await getBookByISBNPromise(isbn);
       return res.status(200).json(bookDetails);
   } catch (error) {
-      
       return res.status(404).json(error);
   }
 });
   
 
-public_users.get('/author/:author',function (req, res) {
+public_users.get('/author/:author', async function (req, res) {
   const author = req.params.author; 
-  let matchingBooks = {};
-  
-  const bookKeys = Object.keys(books);
-
-  for (const isbn of bookKeys) {
-      if (books[isbn].author === author) {
-          matchingBooks[isbn] = books[isbn];
-      }
-  }
-
-  if (Object.keys(matchingBooks).length > 0) {
+    
+  try {
+      const matchingBooks = await getBooksByAuthorPromise(author);
       return res.status(200).json(matchingBooks);
-  } else {
-      return res.status(404).json({message: `No books found by author: ${author}.`});
+  } catch (error) {
+      return res.status(404).json(error);
   }
 });
 
