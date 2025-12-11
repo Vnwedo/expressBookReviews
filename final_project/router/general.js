@@ -29,15 +29,36 @@ public_users.get('/isbn/:isbn',function (req, res) {
   
 
 public_users.get('/author/:author',function (req, res) {
+  
   const author = req.params.author; 
   let matchingBooks = {};
   
+  const bookKeys = Object.keys(books);
+
+  for (const isbn of bookKeys) {
+      if (books[isbn].author === author) {
+          matchingBooks[isbn] = books[isbn];
+      }
+  }
+
+  if (Object.keys(matchingBooks).length > 0) {
+      return res.status(200).json(matchingBooks);
+  } else {
+      return res.status(404).json({message: `No books found by author: ${author}.`});
+  }
+});
+
+
+public_users.get('/title/:title',function (req, res) {
+  const title = req.params.title; 
+  let matchingBooks = {};
   
   const bookKeys = Object.keys(books);
 
   
   for (const isbn of bookKeys) {
-      if (books[isbn].author === author) {
+      
+      if (books[isbn].title.toLowerCase().includes(title.toLowerCase())) { 
           matchingBooks[isbn] = books[isbn];
       }
   }
@@ -47,14 +68,8 @@ public_users.get('/author/:author',function (req, res) {
       return res.status(200).json(matchingBooks);
   } else {
       
-      return res.status(404).json({message: `No books found by author: ${author}.`});
+      return res.status(404).json({message: `No books found with title containing: ${title}.`});
   }
-});
-
-
-public_users.get('/title/:title',function (req, res) {
-  
-  return res.status(300).json({message: "Yet to be implemented"});
 });
 
 
