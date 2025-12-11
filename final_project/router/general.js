@@ -6,37 +6,39 @@ const public_users = express.Router();
 
 
 public_users.post("/register", (req,res) => {
-  //Write your code here
+  
   return res.status(300).json({message: "Yet to be implemented"});
 });
 
-// Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  // Completed code: Return the entire 'books' object
   return res.status(200).send(JSON.stringify(books, null, 4));
 });
 
-// Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
- });
+  const isbn = req.params.isbn;
   
-// Get book details based on author
+  if (books[isbn]) {
+      return res.status(200).json(books[isbn]);
+  } else {
+      return res.status(404).json({message: `Book with ISBN ${isbn} not found.`});
+  }
+});
+  
+
 public_users.get('/author/:author',function (req, res) {
-  //Write your code here
+  
   return res.status(300).json({message: "Yet to be implemented"});
 });
 
-// Get all books based on title
+
 public_users.get('/title/:title',function (req, res) {
-  //Write your code here
+  
   return res.status(300).json({message: "Yet to be implemented"});
 });
 
-//  Get book review
+
 public_users.get('/review/:isbn',function (req, res) {
-  //Write your code here
+  
   return res.status(300).json({message: "Yet to be implemented"});
 });
 
