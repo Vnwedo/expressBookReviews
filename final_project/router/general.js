@@ -50,32 +50,36 @@ public_users.get('/author/:author',function (req, res) {
 
 
 public_users.get('/title/:title',function (req, res) {
-  const title = req.params.title; 
+  
+  const title = req.params.title;
   let matchingBooks = {};
   
   const bookKeys = Object.keys(books);
 
-  
   for (const isbn of bookKeys) {
-      
       if (books[isbn].title.toLowerCase().includes(title.toLowerCase())) { 
           matchingBooks[isbn] = books[isbn];
       }
   }
 
   if (Object.keys(matchingBooks).length > 0) {
-      
       return res.status(200).json(matchingBooks);
   } else {
-      
       return res.status(404).json({message: `No books found with title containing: ${title}.`});
   }
 });
 
 
 public_users.get('/review/:isbn',function (req, res) {
-  
-  return res.status(300).json({message: "Yet to be implemented"});
+  const isbn = req.params.isbn; 
+
+  if (books[isbn]) {
+      
+      return res.status(200).json(books[isbn].reviews);
+  } else {
+      
+      return res.status(404).json({message: `Book with ISBN ${isbn} not found.`});
+  }
 });
 
 module.exports.general = public_users;
